@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/feedFragment"
+        android:icon="@drawable/home"
+        android:title="Akış" />
+    <item
+        android:id="@+id/uploadFragment"
+        android:icon="@drawable/upload"
+        android:title="Yeni Gönderi" />
+    <item
+        android:id="@+id/profilFragment"
+        android:icon="@drawable/profil"
+        android:title="Profil" />
+</menu>
