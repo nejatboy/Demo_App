@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.nejatboy.demoapp.Model.CrudCevap;
 import com.nejatboy.demoapp.Model.Kullanici;
 import com.nejatboy.demoapp.Model.KullanicilarCevap;
 import com.nejatboy.demoapp.R;
@@ -43,9 +46,10 @@ public class GirisActivity extends AppCompatActivity {
     private String BASE_URL = "http://192.168.1.4";
     private Retrofit retrofit;
     private Gson gson;
-    private CompositeDisposable compositeDisposable;        //RxJava kullanımı için
+    private CompositeDisposable compositeDisposable;
     
     private List<Kullanici> tumKullanicilar;
+
 
 
 
@@ -65,7 +69,7 @@ public class GirisActivity extends AppCompatActivity {
         cardView = findViewById(R.id.cardViewGirisActivity);
 
         retrofitKurulumuYap();
-        webServisiCalistir();
+        tumKullanicilariGetir();
         
         buttonGirisYap.setOnClickListener(buttonGirisYapClicked);
         buttonHesapOlustur.setOnClickListener(buttonHesapOlusturClicked);
@@ -87,7 +91,7 @@ public class GirisActivity extends AppCompatActivity {
         gson = new GsonBuilder().setLenient().create();
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())      //Bunu RxJava kullanacaksak yazarız yoksa gerek yok
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
         ;
@@ -96,15 +100,28 @@ public class GirisActivity extends AppCompatActivity {
 
 
 
-    private void webServisiCalistir () {
-        WebServis servis = retrofit.create(WebServis.class);     //Servisimizi oluşturmuş olduk (veri çekmeye hazır)
-
+    private void tumKullanicilariGetir () {
+        WebServis servis = retrofit.create(WebServis.class);
         compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(
                 servis.tumKullanicilariGetir()
-                        .subscribeOn(Schedulers.io())      //Hangi thread de olacağı
-                        .observeOn(AndroidSchedulers.mainThread())        //Sonuçlar main thread de
-                        .subscribe(this::tumKullanicilarCevabiAl)        //Sonuçları nerde ele alacaz      (Bu satır önemli aşağıdaki metoda referans eder)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::tumKullanicilarCevabiAl)
+        );
+    }
+
+
+
+
+    private void kullaniciEkle (String kullaniciAd, String kullaniciSifre) {
+        WebServis servis = retrofit.create(WebServis.class);
+        compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(
+                servis.yeniKullanici(kullaniciAd, kullaniciSifre)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::crudCevabiAl)
         );
     }
 
@@ -115,6 +132,14 @@ public class GirisActivity extends AppCompatActivity {
         if (response.getSuccess() == 1) {
             tumKullanicilar = response.getKullanicilar();
         }
+    }
+
+
+
+
+    private  void crudCevabiAl (CrudCevap crudCevap) {
+        System.out.println(crudCevap.getSuccess());
+        System.out.println(crudCevap.getMessage());
     }
     
     
@@ -160,7 +185,21 @@ public class GirisActivity extends AppCompatActivity {
     private View.OnClickListener buttonHesapOlusturClicked = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            View view = LayoutInflater.from(GirisActivity.this).inflate(R.layout.dialog_hesap_olustur, null);
+            EditText kullaniciAd = view.findViewById(R.id.editTextDialogHesapOlusturKullaniciAd);
+            EditText sifre = view.findViewById(R.id.editTextDialogHesapOlusturKullaniciSifre);
+            Button buttonKayitOl = view.findViewById(R.id.buttonDialogHesapOlusturKayitOl);
 
+            buttonKayitOl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    
+                }
+            });
+
+            Dialog dialog = new Dialog(GirisActivity.this);
+            dialog.setContentView(view);
+            dialog.show();
         }
     };
 }
