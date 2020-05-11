@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import com.google.gson.GsonBuilder;
 import com.nejatboy.demoapp.Model.CrudCevap;
 import com.nejatboy.demoapp.Model.Kullanici;
 import com.nejatboy.demoapp.Model.KullanicilarCevap;
+import com.nejatboy.demoapp.Model.Singleton;
 import com.nejatboy.demoapp.R;
 import com.nejatboy.demoapp.Service.WebServis;
 
@@ -138,8 +141,10 @@ public class GirisActivity extends AppCompatActivity {
 
 
     private  void crudCevabiAl (CrudCevap crudCevap) {
-        System.out.println(crudCevap.getSuccess());
-        System.out.println(crudCevap.getMessage());
+        if (crudCevap.getSuccess() == 1) {
+            Toast.makeText(this, "Kullanıcı oluşturuldu", Toast.LENGTH_SHORT).show();
+            tumKullanicilariGetir();
+        }
     }
     
     
@@ -147,6 +152,20 @@ public class GirisActivity extends AppCompatActivity {
     private boolean kullaniciKayitliMi (String kullaniciAd, String sifre) {
         for (Kullanici kullanici: tumKullanicilar) {
             if (kullanici.getKullaniciAd().equals(kullaniciAd) && kullanici.getKullaniciSifre().equals(sifre)) {
+                Singleton.getInstance().setLoginKullanici(kullanici);
+                Singleton.getInstance().setTumKullanicilar(tumKullanicilar);
+                return true;
+            }
+        }
+        return  false;
+    }
+    
+    
+    
+    
+    private boolean kullaniciAdiMevcutMu (String kullaniciAd) {
+        for (Kullanici kullanici: tumKullanicilar) {
+            if (kullanici.getKullaniciAd().equals(kullaniciAd)) {
                 return true;
             }
         }
@@ -193,7 +212,15 @@ public class GirisActivity extends AppCompatActivity {
             buttonKayitOl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    
+                    if (kullaniciAd.getText().toString().equals("") || sifre.getText().toString().equals("")) {
+                        Toast.makeText(GirisActivity.this, "Kullanıcı adı ve şifre boş olamaz", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (kullaniciAdiMevcutMu(kullaniciAd.getText().toString()))  {
+                            Toast.makeText(GirisActivity.this, "Böyle bir kullanıcı adı sistemde mevcut", Toast.LENGTH_SHORT).show();
+                        } else {
+                            kullaniciEkle(kullaniciAd.getText().toString(), sifre.getText().toString());
+                        }
+                    }
                 }
             });
 

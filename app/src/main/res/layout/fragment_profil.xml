@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#6200EA"
-    tools:context=".View.ProfilFragment">
+    tools:context=".View.ProfilFragment" >
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/circularImageViewProfilResmi"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/profil"
+        app:civ_border_color_end="@color/colorPrimaryDark"
+        app:civ_border_color_start="@color/colorPrimary"
+        app:civ_border_width="3dp"
+        app:civ_circle_color_direction="top_to_bottom"
+        app:civ_shadow="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
